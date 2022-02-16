@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:convert';
 import 'package:zoom_chat_viewer/parse.dart';
@@ -15,7 +16,7 @@ class ZoomChatViewer extends StatefulWidget {
 }
 
 class _ZoomChatViewerState extends State<ZoomChatViewer> {
-  String _content = "";
+  List<String> _messages = [];
 
   Future<void> _readFile() async {
     final result = await FilePicker.platform.pickFiles();
@@ -37,9 +38,13 @@ class _ZoomChatViewerState extends State<ZoomChatViewer> {
       final List<String> messages = parse(content);
 
       setState(() {
-        _content = messages.join("\n");
+        _messages = messages;
       });
     }
+  }
+
+  void _onCopy() {
+    Clipboard.setData(ClipboardData(text: _messages.join("\n")));
   }
 
   // This widget is the root of your application.
@@ -65,12 +70,21 @@ class _ZoomChatViewerState extends State<ZoomChatViewer> {
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
           title: const Text("Zoom Chat Viewer"),
+          actions: <Widget>[
+            IconButton(
+                icon: const Icon(Icons.copy),
+                tooltip: "Copy to Clipboard",
+                onPressed: _onCopy),
+            IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+          ],
         ),
-        body: Column(children: <Widget>[
-          SingleChildScrollView(
-              child: SelectableText(_content,
-                  style: Theme.of(context).textTheme.bodyText1, maxLines: null))
-        ]),
+        body: ListView.builder(
+            padding: const EdgeInsets.all(8),
+            itemCount: _messages.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Text(_messages[index],
+                  style: Theme.of(context).textTheme.bodyText1);
+            }),
         floatingActionButton: FloatingActionButton(
           onPressed: _readFile,
           tooltip: 'Load File',
