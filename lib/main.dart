@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:convert';
 import 'package:zoom_chat_viewer/parse.dart';
+import 'package:zoom_chat_viewer/message_view.dart';
 
 void main() {
   runApp(const ZoomChatViewer());
@@ -86,19 +87,11 @@ class _ZoomChatViewerState extends State<ZoomChatViewer> {
           ],
         ),
         body: ListView.builder(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: _history?.messages.length ?? 0,
             itemBuilder: (BuildContext context, int index) {
               final Message message = _history!.messages[index];
-              return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('${message.sender.name} to ${message.receiver.name}',
-                        style: Theme.of(context).textTheme.subtitle1),
-                    Text(message.content,
-                        style: Theme.of(context).textTheme.bodyText1)
-                  ]);
+              return MessageView(message: message);
             }),
         floatingActionButton: FloatingActionButton(
           onPressed: _readFile,
