@@ -17,12 +17,13 @@ class ZoomChatViewer extends StatefulWidget {
 
 class _ZoomChatViewerState extends State<ZoomChatViewer> {
   List<String> _messages = [];
+  ChatHistory? _history;
 
   Future<void> _readFile() async {
     final result = await FilePicker.platform.pickFiles();
 
     if (result == null) {
-      debugPrint("failed to obtain result");
+      debugPrint('failed to obtain result');
       return;
     }
 
@@ -30,21 +31,27 @@ class _ZoomChatViewerState extends State<ZoomChatViewer> {
       final bytes = result.files[0].bytes;
 
       if (bytes == null) {
-        debugPrint("failed to obtain path");
+        debugPrint('failed to obtain path');
         return;
       }
 
       String content = utf8.decode(bytes);
-      final List<String> messages = parse(content);
+      final history = ChatHistory.parse(content);
 
       setState(() {
-        _messages = messages;
+        _history = history;
+
+        _messages = history.messages
+            .where((m) =>
+                m.sender.name == 'Zehua Chen' && m.receiver.name == 'Everyone')
+            .map((m) => m.content)
+            .toList();
       });
     }
   }
 
   void _onCopy() {
-    Clipboard.setData(ClipboardData(text: _messages.join("\n")));
+    Clipboard.setData(ClipboardData(text: _messages.join('\n')));
   }
 
   // This widget is the root of your application.
@@ -69,21 +76,29 @@ class _ZoomChatViewerState extends State<ZoomChatViewer> {
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: const Text("Zoom Chat Viewer"),
+          title: const Text('Zoom Chat Viewer'),
           actions: <Widget>[
             IconButton(
                 icon: const Icon(Icons.copy),
-                tooltip: "Copy to Clipboard",
+                tooltip: 'Copy to Clipboard',
                 onPressed: _onCopy),
             IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
           ],
         ),
         body: ListView.builder(
             padding: const EdgeInsets.all(8),
-            itemCount: _messages.length,
+            itemCount: _history?.messages.length ?? 0,
             itemBuilder: (BuildContext context, int index) {
-              return Text(_messages[index],
-                  style: Theme.of(context).textTheme.bodyText1);
+              final Message message = _history!.messages[index];
+              return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${message.sender.name} to ${message.receiver.name}',
+                        style: Theme.of(context).textTheme.subtitle1),
+                    Text(message.content,
+                        style: Theme.of(context).textTheme.bodyText1)
+                  ]);
             }),
         floatingActionButton: FloatingActionButton(
           onPressed: _readFile,

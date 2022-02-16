@@ -12,6 +12,21 @@ extension on RegExp {
   }
 }
 
+class ChatHistorySyntaxError extends Error {
+  final String line;
+  final int lineNumber;
+
+  final String comment;
+
+  ChatHistorySyntaxError(
+      {required this.line, required this.lineNumber, required this.comment});
+
+  @override
+  String toString() {
+    return 'on line $lineNumber ($line), $comment';
+  }
+}
+
 class Participant {
   final String name;
   const Participant({required this.name});
@@ -78,12 +93,12 @@ class ChatHistory {
         index < lines.length && !messageHeader.fullyMatch(lines[index]);
 
     if (next()) {
-      buffer.write(lines[index].trim());
+      buffer.write(lines[index]);
       index++;
     }
 
     while (next()) {
-      final trimmed = lines[index].trim();
+      final trimmed = lines[index];
       index += 1;
 
       if (trimmed.isEmpty && index == lines.length) {
@@ -102,56 +117,37 @@ class ChatHistory {
   }
 
   static void _header(List<String> lines, int index, ChatHistory history) {
-    if (messageHeader.fullyMatch(lines[index])) {
-      final blocks = lines[index].split(" ");
-      final from = blocks.indexOf("From");
-      final to = blocks.indexOf("to");
+    final line = lines[index];
+
+    if (messageHeader.fullyMatch(line)) {
+      final blocks = line.split(' ');
+      final from = blocks.indexOf('From');
+      final to = blocks.indexOf('to');
 
       final prunePattern = RegExp(r":");
 
       final sender =
-          blocks.getRange(from + 1, to).join(" ").replaceAll(prunePattern, "");
+          blocks.getRange(from + 1, to).join(' ').replaceAll(prunePattern, '');
 
       final receiver = blocks
           .getRange(to + 1, blocks.length)
-          .join(" ")
-          .replaceAll(prunePattern, "");
+          .join(' ')
+          .replaceAll(prunePattern, '');
 
       return _body(lines, index + 1, history, Participant(name: sender),
           Participant(name: receiver));
     }
 
-    throw Error();
+    throw ChatHistorySyntaxError(
+        line: line, lineNumber: index, comment: 'header expected');
   }
 
   static ChatHistory parse(String chat) {
-    final lines = chat.split("\n");
+    final lines = chat.split('\n').map((l) => l.trim()).toList();
     final history = ChatHistory();
 
     _header(lines, 0, history);
 
     return history;
   }
-}
-
-List<String> parse(String content) {
-  final messages = <String>[];
-  final lines = content.split("\n");
-  var state = _State.idle;
-
-  for (final line in lines) {
-    switch (state) {
-      case _State.idle:
-        if (line.contains("Zehua Chen to Everyone")) {
-          state = _State.print;
-        }
-        break;
-      case _State.print:
-        messages.add(line.trim());
-        state = _State.idle;
-        break;
-    }
-  }
-
-  return messages;
 }
