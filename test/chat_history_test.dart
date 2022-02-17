@@ -2,6 +2,31 @@ import 'package:test/test.dart';
 import 'package:zoom_chat_viewer/models/models.dart';
 
 void main() {
+  test('finding participants', () {
+    final history = ChatHistory.fromMessages(const <Message>[
+      Message(
+          sender: Participant(name: "Person 1"),
+          receiver: Participant.everyone,
+          content: ""),
+      Message(
+          sender: Participant.everyone,
+          receiver: Participant(name: "Person 2"),
+          content: ""),
+      Message(
+          sender: Participant(name: "Person 3"),
+          receiver: Participant(name: "Person 4"),
+          content: "")
+    ]);
+
+    expect(history.participants, <Participant>{
+      Participant.everyone,
+      const Participant(name: "Person 1"),
+      const Participant(name: "Person 2"),
+      const Participant(name: "Person 3"),
+      const Participant(name: "Person 4")
+    });
+  });
+
   test("parse chat history", () {
     const raw = '''16:15:14 From Person 1 to Everyone:
 	search
@@ -19,29 +44,29 @@ void main() {
     const person2 = Participant(name: "Person 2");
 
     final history = ChatHistory.parse(raw);
-    final expected = ChatHistory();
+    final expectedMessages = <Message>[];
 
-    expected.messages.add(const Message(
+    expectedMessages.add(const Message(
         sender: person1, receiver: Participant.everyone, content: "search"));
 
-    expected.messages.add(const Message(
+    expectedMessages.add(const Message(
         sender: person1,
         receiver: Participant.everyone,
         content: "other pages"));
 
-    expected.messages.add(const Message(
+    expectedMessages.add(const Message(
         sender: person2,
         receiver: Participant.everyone,
         content: "Create information hierarchy"));
 
-    expected.messages.add(const Message(
+    expectedMessages.add(const Message(
         sender: person2,
         receiver: Participant.everyone,
         content: "multiple pags"));
 
-    expected.messages.add(
+    expectedMessages.add(
         const Message(sender: person1, receiver: person2, content: "search"));
 
-    expect(history.messages, equals(expected.messages));
+    expect(history.messages, equals(expectedMessages));
   });
 }

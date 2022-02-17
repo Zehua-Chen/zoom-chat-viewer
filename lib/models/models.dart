@@ -9,104 +9,40 @@ class Filters {
   final Participant receiver;
 
   const Filters({required this.sender, required this.receiver});
-}
 
-extension on RegExp {
-  bool fullyMatch(String s) {
-    final match = firstMatch(s);
-
-    if (match == null) {
-      return false;
+  bool accepts(Message message) {
+    if (message.sender.name != 'Everyone') {
+      if (message.sender.name != sender.name) {
+        return false;
+      }
     }
 
-    return match.start == 0 && match.end == s.length;
-  }
-}
+    if (message.receiver.name != 'Everyone') {
+      if (message.receiver.name != receiver.name) {
+        return false;
+      }
+    }
 
-class ChatHistorySyntaxError extends Error {
-  final String line;
-  final int lineNumber;
-
-  final String comment;
-
-  ChatHistorySyntaxError(
-      {required this.line, required this.lineNumber, required this.comment});
-
-  @override
-  String toString() {
-    return 'on line $lineNumber ($line), $comment';
+    return true;
   }
 }
 
 class ChatHistory {
-  List<Message> messages = [];
+  final List<Message> messages;
+  final Set<Participant> participants;
 
-  static final messageHeader = RegExp(
-      r"^[0-9]{2}:[0-9]{2}:[0-9]{2} From [\w, ,\[,\],\-]+ to [\w, ,\[,\],\-]+:$");
+  ChatHistory.empty()
+      : messages = [],
+        participants = {};
 
-  static void _body(List<String> lines, int index, ChatHistory history,
-      Participant sender, Participant receiver) {
-    final buffer = StringBuffer();
-
-    bool next() =>
-        index < lines.length && !messageHeader.fullyMatch(lines[index]);
-
-    if (next()) {
-      buffer.write(lines[index]);
-      index++;
-    }
-
-    while (next()) {
-      final trimmed = lines[index];
-      index += 1;
-
-      if (trimmed.isEmpty && index == lines.length) {
-        continue;
-      }
-
-      buffer.writeln(trimmed);
-    }
-
-    history.messages.add(Message(
-        sender: sender, receiver: receiver, content: buffer.toString()));
-
-    if (index < lines.length) {
-      return _header(lines, index, history);
+  ChatHistory.fromMessages(this.messages) : participants = {} {
+    for (final message in messages) {
+      participants.add(message.sender);
+      participants.add(message.receiver);
     }
   }
 
-  static void _header(List<String> lines, int index, ChatHistory history) {
-    final line = lines[index];
+  ChatHistory.parse(String content) : this.fromMessages(Message.parse(content));
 
-    if (messageHeader.fullyMatch(line)) {
-      final blocks = line.split(' ');
-      final from = blocks.indexOf('From');
-      final to = blocks.indexOf('to');
-
-      final prunePattern = RegExp(r":");
-
-      final sender =
-          blocks.getRange(from + 1, to).join(' ').replaceAll(prunePattern, '');
-
-      final receiver = blocks
-          .getRange(to + 1, blocks.length)
-          .join(' ')
-          .replaceAll(prunePattern, '');
-
-      return _body(lines, index + 1, history, Participant(name: sender),
-          Participant(name: receiver));
-    }
-
-    throw ChatHistorySyntaxError(
-        line: line, lineNumber: index, comment: 'header expected');
-  }
-
-  static ChatHistory parse(String chat) {
-    final lines = chat.split('\n').map((l) => l.trim()).toList();
-    final history = ChatHistory();
-
-    _header(lines, 0, history);
-
-    return history;
-  }
+  const ChatHistory({required this.messages, required this.participants});
 }
