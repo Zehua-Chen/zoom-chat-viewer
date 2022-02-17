@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:convert';
-import 'package:zoom_chat_viewer/parse.dart';
-import 'package:zoom_chat_viewer/message_view.dart';
-import 'package:zoom_chat_viewer/filter_dialog.dart';
+import 'models/models.dart';
+import 'widgets/message_view.dart';
+import 'widgets/filter_dialog.dart';
 
 void main() {
   runApp(const App());

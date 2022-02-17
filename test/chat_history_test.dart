@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:zoom_chat_viewer/parse.dart';
+import 'package:zoom_chat_viewer/models/models.dart';
 
 void main() {
   test("parse chat history", () {

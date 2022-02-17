@@ -1,12 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zoom_chat_viewer/parse.dart';
-
-class Filters {
-  final Participant sender;
-  final Participant receiver;
-
-  const Filters({required this.sender, required this.receiver});
-}
+import '../models/models.dart';
 
 class FilterDialog extends StatefulWidget {
   const FilterDialog({Key? key}) : super(key: key);

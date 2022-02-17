@@ -1,4 +1,15 @@
-enum _State { idle, print }
+import 'participant.dart';
+import 'message.dart';
+
+export 'participant.dart';
+export 'message.dart';
+
+class Filters {
+  final Participant sender;
+  final Participant receiver;
+
+  const Filters({required this.sender, required this.receiver});
+}
 
 extension on RegExp {
   bool fullyMatch(String s) {
@@ -27,63 +38,11 @@ class ChatHistorySyntaxError extends Error {
   }
 }
 
-class Participant {
-  final String name;
-  const Participant({required this.name});
-
-  static const everyone = Participant(name: "Everyone");
-
-  @override
-  bool operator ==(Object other) {
-    if (other is Participant) {
-      return name == other.name;
-    }
-
-    return false;
-  }
-
-  @override
-  int get hashCode => name.hashCode;
-
-  @override
-  String toString() {
-    return "Participant(name=$name)";
-  }
-}
-
-class Message {
-  final Participant sender;
-  final Participant receiver;
-  final String content;
-
-  const Message(
-      {required this.sender, required this.receiver, required this.content});
-
-  @override
-  bool operator ==(Object other) {
-    if (other is Message) {
-      return sender == other.sender &&
-          receiver == other.receiver &&
-          content == other.content;
-    }
-
-    return false;
-  }
-
-  @override
-  int get hashCode => Object.hash(sender, receiver, content);
-
-  @override
-  String toString() {
-    return "Message(sender=$sender, receiver=$receiver, content=$content)";
-  }
-}
-
 class ChatHistory {
   List<Message> messages = [];
 
-  static final messageHeader =
-      RegExp(r"^[0-9]{2}:[0-9]{2}:[0-9]{2} From [\w, ,\[,\],\-]+ to [\w, ,\[,\],\-]+:$");
+  static final messageHeader = RegExp(
+      r"^[0-9]{2}:[0-9]{2}:[0-9]{2} From [\w, ,\[,\],\-]+ to [\w, ,\[,\],\-]+:$");
 
   static void _body(List<String> lines, int index, ChatHistory history,
       Participant sender, Participant receiver) {

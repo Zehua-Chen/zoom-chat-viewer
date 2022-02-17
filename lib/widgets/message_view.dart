@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zoom_chat_viewer/parse.dart';
+import '../models/models.dart';
 
 class MessageView extends StatelessWidget {
   final Message message;
