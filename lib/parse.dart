@@ -83,7 +83,7 @@ class ChatHistory {
   List<Message> messages = [];
 
   static final messageHeader =
-      RegExp(r"^[0-9]{2}:[0-9]{2}:[0-9]{2} From [\w, ]+ to [\w, ]+:$");
+      RegExp(r"^[0-9]{2}:[0-9]{2}:[0-9]{2} From [\w, ,\[,\],\-]+ to [\w, ,\[,\],\-]+:$");
 
   static void _body(List<String> lines, int index, ChatHistory history,
       Participant sender, Participant receiver) {
