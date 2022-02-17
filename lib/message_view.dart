@@ -19,7 +19,7 @@ class MessageView extends StatelessWidget {
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w600)),
+                      ?.copyWith(fontWeight: FontWeight.bold)),
               SelectableText(message.content,
                   style: Theme.of(context).textTheme.bodyMedium)
             ]));
