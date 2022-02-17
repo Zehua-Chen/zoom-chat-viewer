@@ -94,7 +94,8 @@ class _AppHomeState extends State<AppHome> {
   }
 
   Widget _filterDialog(BuildContext context) {
-    return const FilterDialog();
+    final participants = _history?.participants ?? {};
+    return FilterDialog(participants: participants);
   }
 
   // This widget is the root of your application.

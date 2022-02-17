@@ -2,27 +2,22 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 
 class FilterDialog extends StatefulWidget {
-  const FilterDialog({Key? key}) : super(key: key);
+  final Set<Participant> participants;
+
+  const FilterDialog({Key? key, required this.participants}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _FilterDialogState();
 }
 
 class _FilterDialogState extends State<FilterDialog> {
-  final List<Participant> _participants = const [
-    Participant(name: "Peter"),
-    Participant(name: "Aeter"),
-    Participant(name: "Ceter"),
-    Participant.everyone
-  ];
-
-  Widget _input(BuildContext context, Iterable<Participant> participants) {
+  Widget _input(BuildContext context) {
     return Autocomplete<String>(optionsBuilder: (TextEditingValue value) {
       if (value.text == '') {
         return [];
       }
 
-      return _participants
+      return widget.participants
           .where((p) => p.name.contains(value.text))
           .map((p) => p.name);
     }, onSelected: (String selected) {
@@ -38,9 +33,9 @@ class _FilterDialogState extends State<FilterDialog> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text("Sender", style: Theme.of(context).textTheme.titleLarge),
-              _input(context, _participants),
+              _input(context),
               Text("Receiver", style: Theme.of(context).textTheme.titleLarge),
-              _input(context, _participants),
+              _input(context),
               Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: ElevatedButton(
