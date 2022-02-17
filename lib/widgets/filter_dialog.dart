@@ -3,15 +3,32 @@ import '../models/models.dart';
 
 class FilterDialog extends StatefulWidget {
   final Set<Participant> participants;
+  final Filters filters;
 
-  const FilterDialog({Key? key, required this.participants}) : super(key: key);
+  const FilterDialog(
+      {Key? key,
+      required this.participants,
+      this.filters = const Filters(
+          receiver: Participant.everyone, sender: Participant.everyone)})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _FilterDialogState();
 }
 
 class _FilterDialogState extends State<FilterDialog> {
-  Widget _input(BuildContext context) {
+  Participant? _sender;
+  Participant? _receiver;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _sender = widget.filters.sender;
+    _receiver = widget.filters.receiver;
+  }
+
+  Widget _input(BuildContext context, void Function(Participant) onSelected) {
     return Autocomplete<String>(optionsBuilder: (TextEditingValue value) {
       if (value.text == '') {
         return [];
@@ -21,7 +38,7 @@ class _FilterDialogState extends State<FilterDialog> {
           .where((p) => p.name.contains(value.text))
           .map((p) => p.name);
     }, onSelected: (String selected) {
-      debugPrint('selected $selected');
+      onSelected(Participant(name: selected));
     });
   }
 
@@ -33,18 +50,17 @@ class _FilterDialogState extends State<FilterDialog> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text("Sender", style: Theme.of(context).textTheme.titleLarge),
-              _input(context),
+              _input(context, (participant) => _sender = participant),
               Text("Receiver", style: Theme.of(context).textTheme.titleLarge),
-              _input(context),
+              _input(context, (participant) => _receiver = participant),
               Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop(const Filters(
-                            sender: Participant.everyone,
-                            receiver: Participant.everyone));
+                        Navigator.of(context).pop(
+                            Filters(sender: _sender!, receiver: _receiver!));
                       },
-                      child: Text('Done')))
+                      child: const Text('Done')))
             ])));
   }
 }

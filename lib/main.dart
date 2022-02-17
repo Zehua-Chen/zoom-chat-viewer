@@ -43,8 +43,15 @@ class AppHome extends StatefulWidget {
 }
 
 class _AppHomeState extends State<AppHome> {
-  List<String> _messages = [];
   ChatHistory? _history;
+  Filters _filters = const Filters(
+      sender: Participant.everyone, receiver: Participant.everyone);
+
+  List<Message>? get _messages {
+    return _history?.messages
+        .where((message) => _filters.accepts(message))
+        .toList();
+  }
 
   Future<void> _readFile() async {
     final result = await FilePicker.platform.pickFiles();
@@ -67,18 +74,13 @@ class _AppHomeState extends State<AppHome> {
 
       setState(() {
         _history = history;
-
-        _messages = history.messages
-            .where((m) =>
-                m.sender.name == 'Zehua Chen' && m.receiver.name == 'Everyone')
-            .map((m) => m.content)
-            .toList();
       });
     }
   }
 
   void _onCopy() {
-    Clipboard.setData(ClipboardData(text: _messages.join('\n')));
+    Clipboard.setData(
+        ClipboardData(text: _messages?.map((m) => m.content).join('\n')));
   }
 
   void _showFilter(BuildContext context) async {
@@ -89,18 +91,21 @@ class _AppHomeState extends State<AppHome> {
       return;
     }
 
-    debugPrint(filters.sender.name);
-    debugPrint(filters.receiver.name);
+    setState(() {
+      _filters = filters;
+    });
   }
 
   Widget _filterDialog(BuildContext context) {
     final participants = _history?.participants ?? {};
-    return FilterDialog(participants: participants);
+    return FilterDialog(participants: participants, filters: _filters);
   }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final messages = _messages;
+
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -120,9 +125,9 @@ class _AppHomeState extends State<AppHome> {
       ),
       body: ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: _history?.messages.length ?? 0,
+          itemCount: messages?.length ?? 0,
           itemBuilder: (BuildContext context, int index) {
-            final Message message = _history!.messages[index];
+            final Message message = messages![index];
             return MessageView(message: message);
           }),
       floatingActionButton: FloatingActionButton(

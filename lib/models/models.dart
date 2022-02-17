@@ -11,13 +11,13 @@ class Filters {
   const Filters({required this.sender, required this.receiver});
 
   bool accepts(Message message) {
-    if (message.sender.name != 'Everyone') {
+    if (sender.name != 'Everyone') {
       if (message.sender.name != sender.name) {
         return false;
       }
     }
 
-    if (message.receiver.name != 'Everyone') {
+    if (receiver.name != 'Everyone') {
       if (message.receiver.name != receiver.name) {
         return false;
       }
