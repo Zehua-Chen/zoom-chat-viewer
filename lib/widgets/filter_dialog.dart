@@ -28,18 +28,22 @@ class _FilterDialogState extends State<FilterDialog> {
     _receiver = widget.filters.receiver;
   }
 
-  Widget _input(BuildContext context, void Function(Participant) onSelected) {
-    return Autocomplete<String>(optionsBuilder: (TextEditingValue value) {
-      if (value.text == '') {
-        return [];
-      }
+  Widget _input(BuildContext context, Participant init,
+      void Function(Participant) onSelected) {
+    return Autocomplete<String>(
+        optionsBuilder: (TextEditingValue value) {
+          if (value.text == '') {
+            return [];
+          }
 
-      return widget.participants
-          .where((p) => p.name.contains(value.text))
-          .map((p) => p.name);
-    }, onSelected: (String selected) {
-      onSelected(Participant(name: selected));
-    });
+          return widget.participants
+              .where((p) => p.name.contains(value.text))
+              .map((p) => p.name);
+        },
+        onSelected: (String selected) {
+          onSelected(Participant(name: selected));
+        },
+        initialValue: TextEditingValue(text: init.name));
   }
 
   @override
@@ -50,9 +54,10 @@ class _FilterDialogState extends State<FilterDialog> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text("Sender", style: Theme.of(context).textTheme.titleLarge),
-              _input(context, (participant) => _sender = participant),
+              _input(context, _sender!, (participant) => _sender = participant),
               Text("Receiver", style: Theme.of(context).textTheme.titleLarge),
-              _input(context, (participant) => _receiver = participant),
+              _input(context, _receiver!,
+                  (participant) => _receiver = participant),
               Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: ElevatedButton(
