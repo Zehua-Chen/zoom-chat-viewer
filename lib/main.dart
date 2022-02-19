@@ -46,7 +46,9 @@ class AppHome extends StatefulWidget {
 class _AppHomeState extends State<AppHome> {
   ChatHistory? _history;
   Filters _filters = const Filters(
-      sender: Participant.everyone, receiver: Participant.everyone);
+    sender: Participant.everyone,
+    receiver: Participant.everyone,
+  );
 
   List<Message>? get _messages {
     return _history?.messages
@@ -136,6 +138,7 @@ class _AppHomeState extends State<AppHome> {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.filter_list),
+            tooltip: 'Edit filters',
             onPressed: () {
               _showFilter(context);
             },
