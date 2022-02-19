@@ -4,8 +4,11 @@ class ChatHistorySyntaxError extends Error {
 
   final String comment;
 
-  ChatHistorySyntaxError(
-      {required this.line, required this.lineNumber, required this.comment});
+  ChatHistorySyntaxError({
+    required this.line,
+    required this.lineNumber,
+    required this.comment,
+  });
 
   @override
   String toString() {

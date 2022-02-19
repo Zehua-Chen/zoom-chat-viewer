@@ -18,8 +18,11 @@ class Message {
   final Participant receiver;
   final String content;
 
-  const Message(
-      {required this.sender, required this.receiver, required this.content});
+  const Message({
+    required this.sender,
+    required this.receiver,
+    required this.content,
+  });
 
   @override
   bool operator ==(Object other) {
@@ -43,8 +46,13 @@ class Message {
   static final messageHeader = RegExp(
       r"^[0-9]{2}:[0-9]{2}:[0-9]{2} From [\w, ,\[,\],\-]+ to [\w, ,\[,\],\-]+:$");
 
-  static void _body(List<String> lines, int index, List<Message> messages,
-      Participant sender, Participant receiver) {
+  static void _body(
+    List<String> lines,
+    int index,
+    List<Message> messages,
+    Participant sender,
+    Participant receiver,
+  ) {
     final buffer = StringBuffer();
 
     bool next() =>
@@ -97,7 +105,10 @@ class Message {
     }
 
     throw ChatHistorySyntaxError(
-        line: line, lineNumber: index, comment: 'header expected');
+      line: line,
+      lineNumber: index,
+      comment: 'header expected',
+    );
   }
 
   static List<Message> parse(String chat) {

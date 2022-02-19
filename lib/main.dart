@@ -113,23 +113,26 @@ class _AppHomeState extends State<AppHome> {
         title: const Text('Zoom Chat Viewer'),
         actions: <Widget>[
           IconButton(
-              icon: const Icon(Icons.filter_list),
-              onPressed: () {
-                _showFilter(context);
-              }),
+            icon: const Icon(Icons.filter_list),
+            onPressed: () {
+              _showFilter(context);
+            },
+          ),
           IconButton(
-              icon: const Icon(Icons.copy),
-              tooltip: 'Copy to Clipboard',
-              onPressed: _onCopy)
+            icon: const Icon(Icons.copy),
+            tooltip: 'Copy to Clipboard',
+            onPressed: _onCopy,
+          ),
         ],
       ),
       body: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: messages?.length ?? 0,
-          itemBuilder: (BuildContext context, int index) {
-            final Message message = messages![index];
-            return MessageView(message: message);
-          }),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: messages?.length ?? 0,
+        itemBuilder: (BuildContext context, int index) {
+          final Message message = messages![index];
+          return MessageView(message: message);
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _readFile,
         tooltip: 'Load File',
