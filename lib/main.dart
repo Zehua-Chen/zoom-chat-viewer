@@ -101,6 +101,17 @@ class _AppHomeState extends State<AppHome> {
     return FilterDialog(participants: participants, filters: _filters);
   }
 
+  double _horizontalPadding(BuildContext context) {
+    final query = MediaQuery.of(context);
+    final width = query.size.width;
+
+    if (width < 1024) {
+      return 32;
+    }
+
+    return 64;
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -126,7 +137,7 @@ class _AppHomeState extends State<AppHome> {
         ],
       ),
       body: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: _horizontalPadding(context)),
         itemCount: messages?.length ?? 0,
         itemBuilder: (BuildContext context, int index) {
           final Message message = messages![index];
