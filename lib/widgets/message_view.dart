@@ -3,7 +3,12 @@ import '../models/models.dart';
 
 extension on Participant {
   String get initials {
-    return name.split(' ').where((e) => e.isNotEmpty).map((e) => e[0]).join('');
+    return name
+        .split(' ')
+        .where((e) => e.isNotEmpty)
+        .map((e) => e[0])
+        .take(2)
+        .join('');
   }
 }
 
