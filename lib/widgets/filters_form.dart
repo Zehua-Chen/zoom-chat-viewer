@@ -79,8 +79,8 @@ class _FiltersFormState extends State<FiltersForm> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        shrinkWrap: true,
         children: [
           _input(
             context: context,
