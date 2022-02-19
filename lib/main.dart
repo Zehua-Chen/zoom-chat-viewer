@@ -4,7 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'dart:convert';
 import 'models/models.dart';
 import 'widgets/message_view.dart';
-import 'widgets/filter_dialog.dart';
+import 'widgets/filters_form.dart';
 
 void main() {
   runApp(const App());
@@ -28,6 +28,7 @@ class App extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: Colors.blue,
+        // errorColor: Colors.red,
         useMaterial3: true,
       ),
       home: const AppHome(),
@@ -97,8 +98,18 @@ class _AppHomeState extends State<AppHome> {
   }
 
   Widget _filterDialog(BuildContext context) {
-    final participants = _history?.participants ?? {};
-    return FilterDialog(participants: participants, filters: _filters);
+    if (_history == null) {
+      return const Dialog(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Text('Must load a chat log first!'),
+        ),
+      );
+    }
+
+    return Dialog(
+      child: FiltersForm(history: _history!, filters: _filters),
+    );
   }
 
   double _horizontalPadding(BuildContext context) {
