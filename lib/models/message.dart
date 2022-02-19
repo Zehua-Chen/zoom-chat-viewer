@@ -43,8 +43,8 @@ class Message {
     return "Message(sender=$sender, receiver=$receiver, content=$content)";
   }
 
-  static final messageHeader = RegExp(
-      r"^[0-9]{2}:[0-9]{2}:[0-9]{2} From [\w, ,\[,\],\-]+ to [\w, ,\[,\],\-]+:$");
+  static final messageHeader =
+      RegExp(r"^[0-9]{2}:[0-9]{2}:[0-9]{2} From .+ to .+:$");
 
   static void _body(
     List<String> lines,
