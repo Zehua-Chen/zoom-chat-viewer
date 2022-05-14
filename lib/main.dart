@@ -82,8 +82,11 @@ class _AppHomeState extends State<AppHome> {
   }
 
   void _onCopy() {
-    Clipboard.setData(
-        ClipboardData(text: _messages?.map((m) => m.content).join('\n')));
+    final messages = _messages ?? [];
+    final messagesString = messages.map((m) => m.content).join('\n');
+    final data = ClipboardData(text: messagesString);
+
+    Clipboard.setData(data);
   }
 
   void _showFilter(BuildContext context) async {
